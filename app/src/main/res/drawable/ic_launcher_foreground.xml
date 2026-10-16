@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Jet Flame / Trail -->
+    <path
+        android:fillColor="#FFFBBF24"
+        android:pathData="M51,76 L57,76 L54,92 Z" />
+    <path
+        android:fillColor="#FFEF4444"
+        android:pathData="M52,76 L56,76 L54,86 Z" />
+        
+    <!-- Main Jet Body -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M54,18 L58,38 L58,68 L64,74 L64,78 L57,76 L54,78 L51,76 L44,78 L44,74 L50,68 L50,38 Z" />
+
+    <!-- Jet Wings -->
+    <path
+        android:fillColor="#FF38BDF8"
+        android:pathData="M54,34 L88,64 L84,70 L58,58 Z" />
+    <path
+        android:fillColor="#FF0284C7"
+        android:pathData="M54,34 L20,64 L24,70 L50,58 Z" />
+
+    <!-- Tail Wings -->
+    <path
+        android:fillColor="#FF38BDF8"
+        android:pathData="M54,64 L72,76 L68,80 L56,72 Z" />
+    <path
+        android:fillColor="#FF0284C7"
+        android:pathData="M54,64 L36,76 L40,80 L52,72 Z" />
+
+    <!-- Cockpit Glass -->
+    <path
+        android:fillColor="#FF0284C7"
+        android:pathData="M54,26 L56,38 L52,38 Z" />
+</vector>

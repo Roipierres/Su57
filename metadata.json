@@ -1,0 +1,6 @@
+{
+  "name": "Sky Pilot 3D",
+  "description": "3D Flight simulator game with covert secret gallery vault, AES encrypted media, deceptive player profile access, and custom aircraft hangar.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
