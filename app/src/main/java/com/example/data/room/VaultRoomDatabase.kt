@@ -24,7 +24,9 @@ abstract class VaultRoomDatabase : RoomDatabase() {
                     context.applicationContext,
                     VaultRoomDatabase::class.java,
                     "sky_pilot_vault_room.db"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }

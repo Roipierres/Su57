@@ -38,24 +38,31 @@ class VaultRepository(private val context: Context) {
     init {
         // Observe Room DB entities reactively
         repositoryScope.launch {
-            dao.getAllVaultItems().collect { entities ->
-                _items.value = entities.map { it.toVaultItem() }
+            try {
+                dao.getAllVaultItems().collect { entities ->
+                    _items.value = entities.map { it.toVaultItem() }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
 
         repositoryScope.launch {
-            dao.getAllAlbums().collect { albumEntities ->
-                if (albumEntities.isEmpty()) {
-                    // Seed default Room albums
+            try {
+                if (dao.getAlbumCount() == 0) {
                     val defaultAlbums = listOf(
                         AlbumEntity("main", "المعرض الرئيسي", "photo_library", 0),
                         AlbumEntity("private_docs", "وثائق خاصة", "folder_special", 0),
                         AlbumEntity("personal_videos", "فيديوهات شخصية", "video_library", 0)
                     )
                     defaultAlbums.forEach { dao.insertAlbum(it) }
-                } else {
+                }
+
+                dao.getAllAlbums().collect { albumEntities ->
                     _albums.value = albumEntities.map { Album(it.id, it.name, it.icon, it.itemCount) }
                 }
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
         }
     }
@@ -261,5 +268,14 @@ class VaultRepository(private val context: Context) {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    suspend fun addVaultItemDirect(item: VaultItem) = withContext(Dispatchers.IO) {
+        dao.insertVaultItem(VaultItemEntity.fromVaultItem(item))
+        updateAlbumCounts()
+    }
+
+    suspend fun deleteVaultItem(itemId: String) = withContext(Dispatchers.IO) {
+        permanentlyDelete(itemId)
     }
 }

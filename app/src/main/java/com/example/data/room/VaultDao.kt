@@ -35,6 +35,9 @@ interface VaultDao {
     @Query("SELECT * FROM vault_albums ORDER BY name ASC")
     fun getAllAlbums(): Flow<List<AlbumEntity>>
 
+    @Query("SELECT COUNT(*) FROM vault_albums")
+    suspend fun getAlbumCount(): Int
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAlbum(album: AlbumEntity)
 

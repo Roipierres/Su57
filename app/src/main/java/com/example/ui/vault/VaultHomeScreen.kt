@@ -31,6 +31,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -103,7 +104,9 @@ fun VaultHomeScreen(
     repository: VaultRepository,
     isDecoyVault: Boolean = false,
     onLockAndReturnToGame: () -> Unit,
-    onOpenHangar: () -> Unit
+    onOpenHangar: () -> Unit,
+    onOpenAppLocker: () -> Unit,
+    onOpenCloudSync: () -> Unit
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -227,6 +230,28 @@ fun VaultHomeScreen(
                             imageVector = if (gridColumns == 3) Icons.Default.GridView else Icons.Default.List,
                             contentDescription = "Grid Columns",
                             tint = Color.White
+                        )
+                    }
+
+                    IconButton(
+                        onClick = onOpenAppLocker,
+                        modifier = Modifier.testTag("vault_app_locker_btn")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Security,
+                            contentDescription = "App Locker",
+                            tint = Color(0xFF38BDF8)
+                        )
+                    }
+
+                    IconButton(
+                        onClick = onOpenCloudSync,
+                        modifier = Modifier.testTag("vault_cloud_sync_btn")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.CloudUpload,
+                            contentDescription = "Cloud Sync & Backup",
+                            tint = Color(0xFF10B981)
                         )
                     }
 

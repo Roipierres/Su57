@@ -2,7 +2,10 @@ package com.example.data
 
 enum class MediaType {
     PHOTO,
-    VIDEO
+    VIDEO,
+    DOCUMENT,
+    CONTACT,
+    LOCKED_APP
 }
 
 data class VaultItem(
@@ -11,7 +14,7 @@ data class VaultItem(
     val encryptedFileName: String,
     val mimeType: String,
     val mediaType: MediaType,
-    val albumName: String = "Main",
+    val albumName: String = "المعرض الرئيسي",
     val isFavorite: Boolean = false,
     val isTrash: Boolean = false,
     val dateAdded: Long = System.currentTimeMillis(),
@@ -19,7 +22,8 @@ data class VaultItem(
     val durationMs: Long = 0L,
     val width: Int = 0,
     val height: Int = 0,
-    val isDecoy: Boolean = false
+    val isDecoy: Boolean = false,
+    val extraData: String = "" // For phone numbers or package names
 )
 
 data class Album(

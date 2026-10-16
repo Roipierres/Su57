@@ -189,20 +189,25 @@ fun AirplaneGameCanvas(
                 currentWave = targetWave
             }
 
-            // 1. SPAWN ENEMIES
+            // 1. SPAWN ENEMIES & WARSHIPS (بواخر حربية قوية وبطيئة)
             val maxEnemies = (2 + currentWave).coerceAtMost(10)
             if (enemies.size < maxEnemies && frameCount % (70 - (currentWave * 2).coerceAtMost(45)) == 0L) {
-                val eType = Random.nextInt(0, 3)
+                val eType = if (frameCount % 300L == 0L) 3 else Random.nextInt(0, 3)
                 val eHp = when (eType) {
                     0 -> 2 + currentWave / 2
                     1 -> 4 + currentWave
-                    else -> 3 + currentWave
+                    2 -> 3 + currentWave
+                    else -> 15 + currentWave * 4 // Warship (بارجة حربية قوية)
                 }
-                val baseSpeed = 0.0015f + (currentWave * 0.0004f) + Random.nextFloat() * 0.001f
+                val baseSpeed = if (eType == 3) {
+                    0.0007f + (currentWave * 0.0001f) // Slower warship
+                } else {
+                    0.0015f + (currentWave * 0.0004f) + Random.nextFloat() * 0.001f
+                }
                 enemies.add(
                     EnemyJet(
                         id = System.currentTimeMillis() + Random.nextLong(1000),
-                        x = Random.nextFloat() * 0.8f + 0.1f,
+                        x = Random.nextFloat() * 0.7f + 0.15f,
                         y = -0.15f,
                         hp = eHp,
                         maxHp = eHp,
@@ -250,7 +255,7 @@ fun AirplaneGameCanvas(
                             if (enemy.hp <= 0) {
                                 enemiesToRemove.add(enemy)
                                 score += (enemy.maxHp * 30)
-                                coins += Random.nextInt(2, 5)
+                                coins += if (enemy.enemyType == 3) 25 else Random.nextInt(2, 5)
 
                                 soundManager?.playExplosionSound()
 
@@ -258,20 +263,23 @@ fun AirplaneGameCanvas(
                                     ExplosionParticle(
                                         x = enemy.x,
                                         y = enemy.y,
-                                        radius = 24f,
+                                        radius = if (enemy.enemyType == 3) 45f else 24f,
                                         alpha = 1f,
-                                        color = if (enemy.enemyType == 1) Color(0xFFEF4444) else Color(0xFFFBBF24)
+                                        color = if (enemy.enemyType == 3) Color(0xFFFBBF24) else Color(0xFFEF4444)
                                     )
                                 )
 
-                                if (Random.nextFloat() < 0.35f) {
-                                    val giftTypes = PowerUpType.values()
+                                if (enemy.enemyType == 3 || Random.nextFloat() < 0.35f) {
+                                    val giftType = if (enemy.enemyType == 3) PowerUpType.MEGA_BOOST else {
+                                        val giftTypes = PowerUpType.values()
+                                        giftTypes[Random.nextInt(giftTypes.size)]
+                                    }
                                     powerGifts.add(
                                         PowerUpGift(
                                             id = System.currentTimeMillis() + Random.nextLong(1000),
                                             x = enemy.x,
                                             y = enemy.y,
-                                            type = giftTypes[Random.nextInt(giftTypes.size)]
+                                            type = giftType
                                         )
                                     )
                                 }
@@ -623,40 +631,68 @@ fun AirplaneGameCanvas(
 }
 
 private fun DrawScope.drawEnemyJet(enemy: EnemyJet, center: Offset) {
-    val enemyColor = when (enemy.enemyType) {
-        0 -> Color(0xFFEF4444) // Scout
-        1 -> Color(0xFFB91C1C) // Heavy Bomber
-        else -> Color(0xFF9333EA) // Interceptor
-    }
+    if (enemy.enemyType == 3) {
+        // Warship / Heavy Battleship (بارجة حربية ثقيلة وقوية)
+        val hullColor = Color(0xFF1E293B)
+        val armorColor = Color(0xFF475569)
 
-    // ENLARGED VISIBLE ENEMY JET GEOMETRY (WINGSPAN 128dp)
-    val path = Path().apply {
-        moveTo(center.x, center.y + 60f)
-        lineTo(center.x + 64f, center.y - 30f)
-        lineTo(center.x + 18f, center.y - 25f)
-        lineTo(center.x, center.y - 50f)
-        lineTo(center.x - 18f, center.y - 25f)
-        lineTo(center.x - 64f, center.y - 30f)
-        close()
-    }
-    drawPath(path, color = enemyColor)
+        val warshipPath = Path().apply {
+            moveTo(center.x, center.y + 70f)
+            lineTo(center.x + 70f, center.y + 30f)
+            lineTo(center.x + 85f, center.y - 20f)
+            lineTo(center.x + 45f, center.y - 65f)
+            lineTo(center.x, center.y - 75f)
+            lineTo(center.x - 45f, center.y - 65f)
+            lineTo(center.x - 85f, center.y - 20f)
+            lineTo(center.x - 70f, center.y + 30f)
+            close()
+        }
+        drawPath(warshipPath, color = hullColor)
 
-    // Red Cockpit Window
-    drawCircle(color = Color(0xFFFBBF24), radius = 10f, center = Offset(center.x, center.y + 14f))
+        drawPath(Path().apply {
+            moveTo(center.x, center.y + 50f)
+            lineTo(center.x + 40f, center.y + 15f)
+            lineTo(center.x, center.y - 40f)
+            lineTo(center.x - 40f, center.y + 15f)
+            close()
+        }, color = armorColor)
+
+        drawCircle(color = Color(0xFFEF4444), radius = 14f, center = Offset(center.x, center.y - 5f))
+        drawCircle(color = Color(0xFFFBBF24), radius = 7f, center = Offset(center.x, center.y - 5f))
+
+    } else {
+        val enemyColor = when (enemy.enemyType) {
+            0 -> Color(0xFFEF4444) // Scout
+            1 -> Color(0xFFB91C1C) // Heavy Bomber
+            else -> Color(0xFF9333EA) // Interceptor
+        }
+
+        val path = Path().apply {
+            moveTo(center.x, center.y + 60f)
+            lineTo(center.x + 64f, center.y - 30f)
+            lineTo(center.x + 18f, center.y - 25f)
+            lineTo(center.x, center.y - 50f)
+            lineTo(center.x - 18f, center.y - 25f)
+            lineTo(center.x - 64f, center.y - 30f)
+            close()
+        }
+        drawPath(path, color = enemyColor)
+        drawCircle(color = Color(0xFFFBBF24), radius = 10f, center = Offset(center.x, center.y + 14f))
+    }
 
     // HP Bar over Enemy
     if (enemy.hp < enemy.maxHp) {
-        val barWidth = 60f
+        val barWidth = if (enemy.enemyType == 3) 80f else 60f
         val hpRatio = enemy.hp.toFloat() / enemy.maxHp
         drawRect(
             color = Color.Gray,
-            topLeft = Offset(center.x - barWidth / 2, center.y - 64f),
-            size = Size(barWidth, 7f)
+            topLeft = Offset(center.x - barWidth / 2, center.y - 85f),
+            size = Size(barWidth, 8f)
         )
         drawRect(
             color = Color(0xFFEF4444),
-            topLeft = Offset(center.x - barWidth / 2, center.y - 64f),
-            size = Size(barWidth * hpRatio, 7f)
+            topLeft = Offset(center.x - barWidth / 2, center.y - 85f),
+            size = Size(barWidth * hpRatio, 8f)
         )
     }
 }

@@ -24,6 +24,8 @@ import com.example.game.AirplaneGameCanvas
 import com.example.game.DeceptivePlayerModal
 import com.example.sound.SoundManager
 import com.example.ui.theme.MyApplicationTheme
+import com.example.ui.vault.AppLockerScreen
+import com.example.ui.vault.CloudSyncScreen
 import com.example.ui.vault.HangarSettingsScreen
 import com.example.ui.vault.VaultHomeScreen
 
@@ -32,7 +34,9 @@ enum class ScreenState {
     DECEPTIVE_MODAL,
     SECRET_VAULT,
     DECOY_VAULT,
-    HANGAR
+    HANGAR,
+    APP_LOCKER,
+    CLOUD_SYNC
 }
 
 class MainActivity : ComponentActivity() {
@@ -99,6 +103,8 @@ fun SkyPilotVaultApp(
             ScreenState.SECRET_VAULT -> currentScreen = ScreenState.GAME
             ScreenState.DECOY_VAULT -> currentScreen = ScreenState.GAME
             ScreenState.HANGAR -> currentScreen = ScreenState.GAME
+            ScreenState.APP_LOCKER -> currentScreen = ScreenState.SECRET_VAULT
+            ScreenState.CLOUD_SYNC -> currentScreen = ScreenState.SECRET_VAULT
             ScreenState.GAME -> { /* System default exit */ }
         }
     }
@@ -164,6 +170,14 @@ fun SkyPilotVaultApp(
                 onOpenHangar = {
                     soundManager.playUiClickSound()
                     currentScreen = ScreenState.HANGAR
+                },
+                onOpenAppLocker = {
+                    soundManager.playUiClickSound()
+                    currentScreen = ScreenState.APP_LOCKER
+                },
+                onOpenCloudSync = {
+                    soundManager.playUiClickSound()
+                    currentScreen = ScreenState.CLOUD_SYNC
                 }
             )
         }
@@ -179,6 +193,14 @@ fun SkyPilotVaultApp(
                 onOpenHangar = {
                     soundManager.playUiClickSound()
                     currentScreen = ScreenState.HANGAR
+                },
+                onOpenAppLocker = {
+                    soundManager.playUiClickSound()
+                    currentScreen = ScreenState.APP_LOCKER
+                },
+                onOpenCloudSync = {
+                    soundManager.playUiClickSound()
+                    currentScreen = ScreenState.CLOUD_SYNC
                 }
             )
         }
@@ -189,6 +211,26 @@ fun SkyPilotVaultApp(
                 onBack = {
                     soundManager.playUiClickSound()
                     currentScreen = ScreenState.GAME
+                }
+            )
+        }
+
+        ScreenState.APP_LOCKER -> {
+            AppLockerScreen(
+                repository = repository,
+                onBack = {
+                    soundManager.playUiClickSound()
+                    currentScreen = ScreenState.SECRET_VAULT
+                }
+            )
+        }
+
+        ScreenState.CLOUD_SYNC -> {
+            CloudSyncScreen(
+                repository = repository,
+                onBack = {
+                    soundManager.playUiClickSound()
+                    currentScreen = ScreenState.SECRET_VAULT
                 }
             )
         }

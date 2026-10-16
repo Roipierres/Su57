@@ -11,7 +11,7 @@ data class VaultItemEntity(
     val title: String,
     val encryptedFileName: String,
     val mimeType: String,
-    val mediaType: String, // "PHOTO" or "VIDEO"
+    val mediaType: String, // "PHOTO", "VIDEO", "DOCUMENT", "CONTACT", "LOCKED_APP"
     val albumName: String = "المعرض الرئيسي",
     val isFavorite: Boolean = false,
     val isTrash: Boolean = false,
@@ -20,15 +20,23 @@ data class VaultItemEntity(
     val durationMs: Long = 0L,
     val width: Int = 0,
     val height: Int = 0,
-    val isDecoy: Boolean = false
+    val isDecoy: Boolean = false,
+    val extraData: String = ""
 ) {
     fun toVaultItem(): VaultItem {
+        val type = when (mediaType) {
+            "VIDEO" -> MediaType.VIDEO
+            "DOCUMENT" -> MediaType.DOCUMENT
+            "CONTACT" -> MediaType.CONTACT
+            "LOCKED_APP" -> MediaType.LOCKED_APP
+            else -> MediaType.PHOTO
+        }
         return VaultItem(
             id = id,
             title = title,
             encryptedFileName = encryptedFileName,
             mimeType = mimeType,
-            mediaType = if (mediaType == "PHOTO") MediaType.PHOTO else MediaType.VIDEO,
+            mediaType = type,
             albumName = albumName,
             isFavorite = isFavorite,
             isTrash = isTrash,
@@ -37,7 +45,8 @@ data class VaultItemEntity(
             durationMs = durationMs,
             width = width,
             height = height,
-            isDecoy = isDecoy
+            isDecoy = isDecoy,
+            extraData = extraData
         )
     }
 
@@ -57,7 +66,8 @@ data class VaultItemEntity(
                 durationMs = item.durationMs,
                 width = item.width,
                 height = item.height,
-                isDecoy = item.isDecoy
+                isDecoy = item.isDecoy,
+                extraData = item.extraData
             )
         }
     }
